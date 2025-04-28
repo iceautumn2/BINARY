@@ -61,12 +61,12 @@ function findAllAdjustments() {
     for (let i = 0; i < nums.length; i++) {
         for (let n = 1; n <= nums[i]; n++) { // 減去1、2、3...到自己的值
             let newNums = [...nums];
-            newNums[i] = nums[i] - n;
-            if (newNums[i] < 0) continue; // 不允許負數
-
-            let newData = calculate(newNums);
-            if (newData.sums.every(sum => sum % 2 === 0)) {
-                results += `剪掉第 ${i+1} 個數字（${nums[i]}）的 ${n}，變成 ${newNums[i]} ，成功使6個總和為偶數。<br>`;
+            if (newNums[i] - n > 0) {  // 確保不會變成負數
+                newNums[i] = nums[i] - n;
+                let newData = calculate(newNums);
+                if (newData.sums.every(sum => sum % 2 === 0)) {
+                    results += `剪掉第 ${i+1} 個數字（${nums[i]}）的 ${n}，變成 ${newNums[i]} ，成功使6個總和為偶數。<br>`;
+                }
             }
         }
     }
