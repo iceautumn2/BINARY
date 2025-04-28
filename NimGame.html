@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>棋子遊戲</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 50px);
+      grid-gap: 5px;
+    }
+    .cell {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      position: relative;
+    }
+    .piece {
+      width: 20px;
+      height: 20px;
+      background-color: blue;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .message {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="board" id="board"></div>
+    <div class="message" id="message">玩家1輪到你！</div>
+  </div>
+  <script>
+    let currentPlayer = 1;
+    const positions = [1, 3, 5, 7, 9];  // 初始棋子位置
+    const board = document.getElementById('board');
+    const message = document.getElementById('message');
+
+    // 創建棋盤
+    function createBoard() {
+      for (let i = 0; i < 20; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        if (positions.includes(i)) {
+          const piece = document.createElement('div');
+          piece.classList.add('piece');
+          cell.appendChild(piece);
+        }
+        cell.addEventListener('click', () => movePiece(i));
+        board.appendChild(cell);
+      }
+    }
+
+    // 移動棋子
+    function movePiece(position) {
+      if (positions.includes(position)) {
+        // 找到選中的棋子
+        const index = positions.indexOf(position);
+        if (index !== -1) {
+          positions[index] = Math.max(0, position - 1); // 只能移動到更小的位置
+          updateBoard();
+          checkWinner();
+          togglePlayer();
+        }
+      }
+    }
+
+    // 更新棋盤
+    function updateBoard() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        const index = parseInt(cell.dataset.index);
+        const piece = cell.querySelector('.piece');
+        if (positions.includes(index)) {
+          if (!piece) {
+            const newPiece = document.createElement('div');
+            newPiece.classList.add('piece');
+            cell.appendChild(newPiece);
+          }
+        } else {
+          if (piece) {
+            piece.remove();
+          }
+        }
+      });
+    }
+
+    // 檢查誰勝利
+    function checkWinner() {
+      if (positions.every(pos => pos === 0)) {
+        message.textContent = `玩家 ${currentPlayer} 勝利！`;
+        board.style.pointerEvents = 'none'; // 禁止繼續遊戲
+      }
+    }
+
+    // 切換玩家
+    function togglePlayer() {
+      currentPlayer = currentPlayer === 1 ? 2 : 1;
+      message.textContent = `玩家${currentPlayer}輪到你！`;
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
