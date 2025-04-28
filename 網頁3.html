@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>Binary Sum Checker - 所有可能</title>
+</head>
+<body>
+
+<h1>輸入5個數字 (1-50)</h1>
+<input type="number" id="num1" min="1" max="50">
+<input type="number" id="num2" min="1" max="50">
+<input type="number" id="num3" min="1" max="50">
+<input type="number" id="num4" min="1" max="50">
+<input type="number" id="num5" min="1" max="50">
+<br><br>
+<button onclick="calculate()">計算二進位與總和</button>
+<button onclick="findAllAdjustments()">找出所有剪掉的方法</button>
+
+<h2>結果</h2>
+<div id="result"></div>
+
+<script>
+function to6BitBinary(num) {
+    return num.toString(2).padStart(6, '0');
+}
+
+function calculate(numbers = null) {
+    let nums = numbers || [
+        parseInt(document.getElementById('num1').value),
+        parseInt(document.getElementById('num2').value),
+        parseInt(document.getElementById('num3').value),
+        parseInt(document.getElementById('num4').value),
+        parseInt(document.getElementById('num5').value)
+    ];
+    let binaries = nums.map(n => to6BitBinary(n));
+    let sums = [0, 0, 0, 0, 0, 0];
+
+    binaries.forEach(bin => {
+        for (let i = 0; i < 6; i++) {
+            if (bin[i] === '1') {
+                sums[i]++;
+            }
+        }
+    });
+
+    let output = "<strong>數字及其二進位：</strong><br>";
+    for (let i = 0; i < nums.length; i++) {
+        output += nums[i] + " → " + binaries[i] + "<br>";
+    }
+    output += "<br><strong>每一位元總和：</strong> [" + sums.join(", ") + "]";
+    document.getElementById('result').innerHTML = output;
+
+    return {nums, binaries, sums};
+}
+
+function findAllAdjustments() {
+    let originalData = calculate(); // 先用現有的數字
+    let nums = originalData.nums;
+    let found = false;
+    let results = "";
+
+    for (let i = 0; i < nums.length; i++) {
+        for (let n = 1; n <= nums[i]; n++) { // 減去1、2、3...到自己的值
+            let newNums = [...nums];
+            newNums[i] = nums[i] - n;
+            if (newNums[i] < 0) continue; // 不允許負數
+
+            let newData = calculate(newNums);
+            if (newData.sums.every(sum => sum % 2 === 0)) {
+                results += `剪掉第 ${i+1} 個數字（${nums[i]}）的 ${n}，變成 ${newNums[i]} ，成功使6個總和為偶數。<br>`;
+                found = true;
+                // 不 break，繼續找其他可能
+            }
+        }
+    }
+
+    if (!found) {
+        results = "找不到符合條件的方法。";
+    }
+
+    document.getElementById('result').innerHTML += "<br><br><strong>所有剪掉結果：</strong><br>" + results;
+}
+</script>
+
+</body>
+</html>
