@@ -56,7 +56,6 @@ function calculate(numbers = null) {
 function findAllAdjustments() {
     let originalData = calculate(); // 先用現有的數字
     let nums = originalData.nums;
-    let found = false;
     let results = "";
 
     for (let i = 0; i < nums.length; i++) {
@@ -68,13 +67,11 @@ function findAllAdjustments() {
             let newData = calculate(newNums);
             if (newData.sums.every(sum => sum % 2 === 0)) {
                 results += `剪掉第 ${i+1} 個數字（${nums[i]}）的 ${n}，變成 ${newNums[i]} ，成功使6個總和為偶數。<br>`;
-                found = true;
-                // 不 break，繼續找其他可能
             }
         }
     }
 
-    if (!found) {
+    if (results === "") {
         results = "找不到符合條件的方法。";
     }
 
